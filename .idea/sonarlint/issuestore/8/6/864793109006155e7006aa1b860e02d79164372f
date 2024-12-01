@@ -1,0 +1,11 @@
+
+¡	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(¿Âä€úÿÿÿÿ8°£—¸2J$d37ec0b0-93c6-489c-ab0f-85b93abeecee
+™
+java:S3457"Q%n should be used in place of \n to produce the platform-specific line separator.(Íµ«‡ûÿÿÿÿ8Û£—¸2J$3800ce7a-600e-4d66-8b30-d62518fee4e4
+m
+java:S3457"%String contains no format specifiers.(Íµ«‡ûÿÿÿÿ8Û£—¸2J$19d457ca-58f6-4e61-a680-7e9bfd002b61
+r	java:S106"+Replace this use of System.out by a logger.(è÷Ìªıÿÿÿÿ8Û£—¸2J$4699aa05-3407-441f-b130-dab7adc1e5cf
+9
+java:S1116"Remove this empty statement.(ª€Ÿ„8ªæ£—¸2
+r	java:S106"+Replace this use of System.out by a logger.(ĞÄÿşÿÿÿÿ8Û£—¸2J$88a498ad-6287-497f-bb7d-7f1e349d5360
+~	java:S125&"<This block of commented-out lines of code should be removed.(õ‹…Ù8á£—¸2J$84a36586-0be0-41a3-a706-e8631e3953c0
