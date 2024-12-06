@@ -25,40 +25,40 @@ public class GuardGallivant {
         C = arr[0].length;
 
         int[] dir = findGuard(arr);
-        guardTraversal(arr, dir);
+
         //Arrays.stream(arr).forEach(System.out::println);
-        System.out.println("sum of X path:"+countPath(arr));
+        System.out.println("sum of X path:"+guardTraversal(arr, dir).size());
 
+        int res = 0;
+        for(int i=0;i<R;i++) {
+            for (int j = 0; j < C; j++) {
+                if(arr[i][j] == '#' || guardPositions.containsKey(arr[i][j]))
+                    continue;
+                if(formsLoop(arr, dir, i, j))
+                    res++;
 
-    }
-
-    static int countPath(char[][] arr){
-        int sum = 0;
-        for(int i=0;i<R;i++){
-            for(int j=0;j<C;j++){
-                if(arr[i][j]=='X') {
-                    sum++;
-                }
             }
         }
-        return sum;
+        System.out.println("Additional barriers forming loops: "+res);
+
     }
 
-    static void guardTraversal(char[][] input, int[] startDir){
+    static Set<List<Integer>> guardTraversal(char[][] input, int[] startDir){
         int i=startDir[0]; int j=startDir[1];
         int x=startDir[2]; int y=startDir[3];
         int prevI = i, prevJ = j;
         int currDir = directions.indexOf(List.of(x, y));
+        HashSet<List<Integer>> visited = new HashSet<>();
         while(i>0 && j>0 && i<R && j<C) {
             while (input[i][j] != '#') {
                 prevI = i;
                 prevJ = j;
-                input[i][j] = 'X';
+                visited.add(List.of(i, j));
                 i += x;
                 j += y;
 
                 if (i >= R || i < 0 || j >= C || j < 0) {
-                    return;
+                    return visited;
                 }
             }
             //System.out.println("--------curr state");
@@ -68,6 +68,44 @@ public class GuardGallivant {
             x = directions.get(currDir).get(0);
             y = directions.get(currDir).get(1);
         }
+
+        return visited;
+    }
+
+    static boolean formsLoop(char[][] input, int[] startDir, int bi, int bj){
+        input[bi][bj] = '#';
+        int i=startDir[0]; int j=startDir[1];
+        int x=startDir[2]; int y=startDir[3];
+        int prevI = i, prevJ = j;
+        int currDir = directions.indexOf(List.of(x, y));
+        HashSet<List<Integer>> visited = new HashSet<>();
+        while(i>0 && j>0 && i<R && j<C) {
+            while (input[i][j] != '#') {
+                prevI = i;
+                prevJ = j;
+                if(visited.contains(List.of(i, j, currDir))) {
+                    Arrays.stream(input).forEach(System.out::println);
+                    input[bi][bj] = '.';
+                    return true;
+                }
+                visited.add(List.of(i, j, currDir));
+                i += x;
+                j += y;
+
+                if (i >= R || i < 0 || j >= C || j < 0) {
+                    input[bi][bj] = '.';
+                    return false;
+                }
+            }
+            //System.out.println("--------curr state");
+            //Arrays.stream(input).forEach(System.out::println);
+            i=prevI; j=prevJ;
+            currDir = (currDir+1)%4;
+            x = directions.get(currDir).get(0);
+            y = directions.get(currDir).get(1);
+        }
+        input[bi][bj] = '.';
+        return false;
     }
 
     static int[] findGuard(char[][] input){
