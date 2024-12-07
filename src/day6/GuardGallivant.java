@@ -84,7 +84,7 @@ public class GuardGallivant {
                 prevI = i;
                 prevJ = j;
                 if(visited.contains(List.of(i, j, currDir))) {
-                    Arrays.stream(input).forEach(System.out::println);
+                    //Arrays.stream(input).forEach(System.out::println);
                     input[bi][bj] = '.';
                     return true;
                 }
