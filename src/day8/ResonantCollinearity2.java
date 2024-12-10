@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import static Util.TxtFileProcessor.readFileLines;
-
+// naive attempt at another approach
+//please ignore this
 public class ResonantCollinearity2 {
     static int R = 0;
     static int C = 0;
