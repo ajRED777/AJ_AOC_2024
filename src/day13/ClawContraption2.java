@@ -11,9 +11,8 @@ import static Util.TxtFileProcessor.readFileLines;
 
 public class ClawContraption2 {
     static int R = 0;
-    static HashMap<StateKey, Long> memo;
     public static void main(String[] args) {
-        List<String> input = readFileLines(13, true);
+        List<String> input = readFileLines(13, false);
         R = input.size();
         Pattern pattern = Pattern.compile("[+-]?\\d+");
         int m = 0;
@@ -28,11 +27,11 @@ public class ClawContraption2 {
         }
 
         long res = 0;
+        long add = 10000000000000L;
         for (long[] machine : machines) {
-            memo = new HashMap<>();
             System.out.println("processing: "+ Arrays.toString(machine));
-            long cost = check(0, 0, machine, 0, 0);
-            if (cost != Long.MAX_VALUE) {
+            long cost = getCost2(machine[4] + add, machine[5] + add, machine[0], machine[1], machine[2], machine[3]);
+            if (cost > 0) {
                 System.out.println("Cost= " +cost);
                 res += cost;
             }
@@ -41,46 +40,56 @@ public class ClawContraption2 {
         System.out.println("Total cost: " + res);
     }
 
-    static long check(long i, long j, long[] machine, int a, int b) {
 
-        //if (a == 100 || b == 100) return Long.MAX_VALUE;
-        if (i > machine[4] || j > machine[5]) return Long.MAX_VALUE;
+    //naive attempt at linear equations in a brute force manner->didnt work
+    public static long getCost(long targetX, long targetY, long aX, long aY, long bX, long bY) {
+        System.out.println("targetX: " + targetX + " targetY: " + targetY);
+        System.out.println("aX: " + aX +" aY: "+ aY + " bX: " + bX + "  bY: " + bY);
+        //A * 94 + B * 22 = 10000000008400
+        //A * 34 + B * 67 = 10000000005400
+        //
+        //A * aX + B * bX = targetX -> B*bX = targetX- A*aX -> B = (targetX- A*aX)/bX
+        //A * aY + B * bY = targetY -> B*bY = targetY- A*aY -> B = (targetY- A*aY)/bY
+        for (long A = 0; A <= targetX / aX; A++) {
+            //A * aX + B * bX = targetX -> B*bX = targetX- A*aX -> B = (targetX- A*aX)/bX
+            long remainingX = targetX - aX * A;// B*bX = targetX- A*aX
+            if (remainingX % bX == 0) { //B = (targetY- A*aY)/bY
+                long B = remainingX / bX;
 
-        if (i == machine[4] && j == machine[5]) return a + b;
-        var key = new StateKey(i, j, a, b);;
-        if(memo.containsKey(key)) return memo.get(key);
-        System.out.println("i=" + i + ", j=" + j);
-        long result = Math.min(
-                check(i + machine[0], j + machine[1], machine, a + 1, b),
-                check(i + machine[2], j + machine[3], machine, a, b + 1)
-        );
-        memo.put(key, result);
-        return result;
+                //A * aY + B * bY = targetY
+                long currentY = A * aY + B * bY;
+                if (currentY == targetY) {
+                    return A * 3 + B;
+                }
+
+            }
+        }
+        return -1;
     }
 
+    public static long getCost2(double targetX, double targetY, double aX, double aY, double bX, double bY) {
+        //A * 94 + B * 22 = 10000000008400
+        //A * 34 + B * 67 = 10000000005400
+        //
+        //A * aX + B * bX = targetX
+        //get A ->  A = (targetX - B*bX)/aX
+        //
+        //A * aY + B * bY = targetY
+        //substitute A  ->  ((targetX - B*bX)/aX) * aY + B * bY = targetY
+        //              ->  (-B * bX *aY)/aX + B*bY = targetY - (targetX * aY)/aX
+        //              ->  B = aX/(bY*aX - bX*aY) * (targetY*aX - targetX*aY)/aX
+        //              ->  B = (ax*targetY - targetX*aY)/(bY*aX - bX*aY)
 
-    static class StateKey {
-        long i, j, a, b;
-
-        StateKey(long i, long j, long a, long b) {
-            this.i = i;
-            this.j = j;
-            this.a = a;
-            this.b = b;
+        long B = (long) ((long)(aX*targetY - targetX*aY)/(aX*bY-bX*aY));
+        long A = (long) ((targetX - B*bX)/aX);
+        System.out.println("A: " + A + " B: " + B);
+        long actualX = (long) (A*aX + B*bX);
+        long actualY = (long) (A*aY + B*bY);
+        System.out.println("actualX: " + actualX + " actualY: " + actualY);
+        if(A>0 && B>0 && actualX==targetX && actualY==targetY){
+            return A*3 + B;
         }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(i, j, a, b);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
-            StateKey other = (StateKey) obj;
-            return i == other.i && j == other.j && a == other.a && b == other.b;
-        }
+        return -1;
     }
 
 }
